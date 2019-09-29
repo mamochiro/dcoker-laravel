@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  app:
+    image: node:10.15-alpine
+    # build: .
+    ports:
+      # - 80:80
+      - 80:3000
+    volumes:
+      - ./:/src/app
+      # - .:/var/www/html
+      # - ./vhost/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=wmc
+      - MYSQL_USER=wmc
+      - MYSQL_PASSWORD=wmc
+      - APP_PORT=3000
+    # depends_on:
+    #   - mysql 
+    working_dir : /src/app
+    command: node index.js
+      
+  mysql:
+      image: mysql:5.7
+      volumes:
+        - ./mysql-data:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=wmc
+        - MYSQL_DATABASE=wmc
+        - MYSQL_USER=wmc
+        - MYSQL_PASSWORD=wmc
+  
+  phpmyadmin: 
+      image: phpmyadmin/phpmyadmin
+      ports:
+        - 8080:80
+      environment:
+        - PMA_HOST=mysql
+        - PMA_USER=wmc
+        - PMA_PASSWORD=wmc
+      depends_on:
+        - mysql
